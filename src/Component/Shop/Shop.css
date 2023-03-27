@@ -7,7 +7,5 @@
     grid-template-columns: repeat(3, 1fr);
     gap: 45px;
     margin: 50px;
-   
-    border: 10px solid rebeccapurple;
     
 }
