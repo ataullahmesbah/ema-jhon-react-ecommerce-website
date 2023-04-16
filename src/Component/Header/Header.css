@@ -6,13 +6,19 @@
     justify-content: space-between;
     padding-left: 100px;
     padding-right: 100px;
+    
 }
 
 nav.header a{
     text-decoration: none;
     color: rgb(255, 255, 255);
     margin-left: 30px;
+    
 }
 nav.header a:hover{
     color: orange;
+}
+.user-text{
+    color: white;
+    margin-left: 10px;
 }
