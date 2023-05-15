@@ -8,21 +8,36 @@ import { Link, useLoaderData } from 'react-router-dom';
 const Shop = () => {
     const [products, setProducts] = useState([]);
     const [cart, setCart] = useState([]);
+    const [currentPage, setCurrentPage] = useState(0);
+    const [itemsPerPage, setItemsPerPage] = useState(10);
     const { totalProducts } = useLoaderData();
 
-    const itemsPerPage = 10;
+
     const totalPages = Math.ceil(totalProducts / itemsPerPage)
 
     const pageNumbers = [...Array(totalPages).keys()]
+    
+
+    // useEffect(() => {
+    //     fetch('http://localhost:5000/products')
+    //         .then(res => res.json())
+    //         .then(data => setProducts(data))
+    // }, []);
+
+    useEffect( () => {
+        async function fetchData(){
+            const response = await fetch(`http://localhost:5000/products?page=${currentPage}&limit=${itemsPerPage}`);
+            const data = await response.json();
+            setProducts(data)
+        }
+        fetchData();
+
+    } , [currentPage, itemsPerPage])
 
 
-    console.log(totalProducts);
 
-    useEffect(() => {
-        fetch('http://localhost:5000/products')
-            .then(res => res.json())
-            .then(data => setProducts(data))
-    }, []);
+
+
 
     useEffect(() => {
         const storedCart = getShoppingCart()
@@ -73,38 +88,67 @@ const Shop = () => {
         deleteShoppingCart();
     }
 
+    const options = [5, 10, 20];
+    function handleSelectChange(event) {
+        setItemsPerPage(parseInt(event.target.value))
+        setCurrentPage(0);
+    }
+
     return (
         <>
-        <div className='shop-container'>
-            <div className="products-container">
+            <div className='shop-container'>
+                <div className="products-container">
+                    {
+                        products.map(product => <Product
+                            key={product._id}
+                            product={product}
+                            handleAddToCart={handleAddToCart}
+                        ></Product>)
+                    }
+                </div>
+
+                <div className="cart-container">
+                    <Cart cart={cart}
+                        handleClearCart={handleClearCart}
+                    >
+                        <Link className='proceed-link' to="/orders">
+                            <button className='btn-proceed'>Review Order</button></Link>
+                    </Cart>
+                </div>
+
+            </div>
+
+            {/* {pagination} */}
+            <div className="pagination">
+                <p>Current Page: {currentPage} and items per page: {itemsPerPage}</p>
                 {
-                    products.map(product => <Product
-                        key={product._id}
-                        product={product}
-                        handleAddToCart={handleAddToCart}
-                    ></Product>)
+                    pageNumbers.map(number => <button
+                        key={number}
+                        className={currentPage === number ? 'selected' : ''}
+                        onClick={() => setCurrentPage(number)}
+                    >
+                        {number}</button>)
                 }
-            </div>
 
-            <div className="cart-container">
-                <Cart cart={cart}
-                    handleClearCart={handleClearCart}
+                <select
+                value={itemsPerPage}
+                onChange={handleSelectChange}
                 >
-                    <Link className='proceed-link' to="/orders">
-                        <button className='btn-proceed'>Review Order</button></Link>
-                </Cart>
+                    {
+                        options.map(option => (
+                            <option key={option}
+                            value={option}
+                            >
+                                {option}
+                            </option>
+                        ))
+                    }
+
+
+
+                </select>
+
             </div>
-
-        </div>
-
-        {/* {pagination} */}
-        <div className="pagination">    
-        {
-            pageNumbers.map(number => <button
-            key={number}>{number}</button>)
-        }
-        
-        </div>
         </>
     );
 };
