@@ -9,7 +9,14 @@ const Shop = () => {
     const [products, setProducts] = useState([]);
     const [cart, setCart] = useState([]);
     const { totalProducts } = useLoaderData();
-    // console.log(totalProducts);
+
+    const itemsPerPage = 10;
+    const totalPages = Math.ceil(totalProducts / itemsPerPage)
+
+    const pageNumbers = [...Array(totalPages).keys()]
+
+
+    console.log(totalProducts);
 
     useEffect(() => {
         fetch('http://localhost:5000/products')
@@ -67,6 +74,7 @@ const Shop = () => {
     }
 
     return (
+        <>
         <div className='shop-container'>
             <div className="products-container">
                 {
@@ -88,6 +96,16 @@ const Shop = () => {
             </div>
 
         </div>
+
+        {/* {pagination} */}
+        <div className="pagination">    
+        {
+            pageNumbers.map(number => <button
+            key={number}>{number}</button>)
+        }
+        
+        </div>
+        </>
     );
 };
 
